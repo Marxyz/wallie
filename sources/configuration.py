@@ -17,7 +17,7 @@ class AppConfiguration:
             "Name": "IntelImagesRecognizer",
             "AllowedTags": [],
             "SetThreshold": 0.7,
-        },
+        },  
     }
 
     def __init__(self, commands):
@@ -25,14 +25,19 @@ class AppConfiguration:
         self._CurrentConfigFile = _LoadConfigFile()
 
     def _LoadConfigFile(self):
-        j = json.load(self.ConfigFile)
-        return j
+        f = open(self.ConfigFileLocation, "w+")
+        if(len(f.read())):
+            return json.load(f)
+        else:
+            return json.dumps(self.defaultJsonSchema)
 
     def WriteChanges(self):
-        json.dump(self.json, open(self.ConfigFile))
+        json.dump(self.json, open(self._CurrentConfigFile, "w+"))
 
     def __getattribute__(self, name):
         return self._CurrentConfigFile[name]
+
+    
 
 
 class ArgsIntercepter:
