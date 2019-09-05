@@ -1,5 +1,6 @@
 import subprocess
 import shutil
+
 def SaveImage(path, image):
     with open(path, "wb") as file:
         image.raw.decode_content = True

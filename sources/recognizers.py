@@ -1,23 +1,7 @@
-import warnings
-with warnings.catch_warnings():
-    warnings.filterwarnings("ignore", category=FutureWarning)
-    import numpy
-    import os
-    import sys
-    stderr = sys.stderr
-    sys.stderr = open("/dev/null", "w")
-    import keras
-    sys.stderr = stderr
-    import numpy as np
-    import tensorflow as tf
-    import logging
-    logger = tf.get_logger()
-    logger.setLevel(logging.ERROR)
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-logging.getLogger("tensorflow").setLevel(logging.FATAL)
+Imports()
 
 
-class DefaultRecognizer:
+class IntelImagesRecognizer:
 
     Classes = {
         "Buildings": 0,
@@ -31,7 +15,7 @@ class DefaultRecognizer:
     @classmethod
     def FromPath(cls, path):
         model = keras.models.load_model(path)
-        return DefaultRecognizer(model)
+        return IntelImagesRecognizer(model)
 
     def __init__(model):
         self.LoadedModel = model
@@ -57,3 +41,30 @@ class DefaultRecognizer:
         img_tensor /= 255.0
         return img_tensor
 
+
+def GetRecognizer(args):
+    if args == "IntelImagesRecognizer":
+        return IntelImagesRecognizer.FromPath("\kernels\IntelImages.h5")
+
+
+def Imports():
+    import warnings
+
+    with warnings.catch_warnings():
+        warnings.filterwarnings("ignore", category=FutureWarning)
+
+        import numpy
+        import os
+        import sys
+
+        stderr = sys.stderr
+        sys.stderr = open("/dev/null", "w")
+        import keras
+        sys.stderr = stderr
+        
+        import tensorflow as tf
+        import logging
+        logger = tf.get_logger()
+        logger.setLevel(logging.ERROR)
+    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+    logging.getLogger("tensorflow").setLevel(logging.FATAL)

@@ -1,10 +1,10 @@
 import argparse
-import internals.configuration
-import internals.recognizers
-import internals.core
+import sources.configuration
+import sources.recognizers
+import sources.core
 
 
-parser = argparse.ArgumentParser("Wallie - changes your wallpaper how adn when uou want it.")
+parser = argparse.ArgumentParser("Wallie - changes your wallpaper how you want it.")
 parser.add_argument(
     "-n",
     "--now",
@@ -17,14 +17,14 @@ parser.add_argument(
     "-t",
     "--tags",
     required=False,
-    help="Changes the tags which define allow wallpapers. If set without -now flag, the change occurs after previously defined or default interval.",
+    help="Changes the tags which define allow wallpapers. If set without --now flag, the change occurs after previously defined or default interval.",
     nargs="+",
 )
 parser.add_argument(
     "-i",
     "--interval",
     required=False,
-    help="Sets the time interval in which the change ocurres.",
+    help="Sets the repeat change delay.",
     type=int,
 )
 parser.add_argument(
@@ -49,28 +49,27 @@ parser.add_argument(
     "--recognizer",
     required=False,
     type=str,
-    default="IntelImages",
-    help='Changeas the recognizer to provided. If supported. The default one is named "IntelImages"',
+    default="IntelImagesRecognizer",
+    help='Changes the image recognizer to provided. If supported. The default one is named "IntelImagesRecognizer".',
 )
+
 parser.add_argument(
     "-s",
     "--set",
     required=False,
     type=str,
-    help="Sets the wallpaper from provided path. If not specified, resets the repeat flag to false so the wallpaper change does not occur anymore.",
+    help='Sets the wallpaper from provided path.',
 )
 
 args = parser.parse_args()
 
 
-commands = internals.configuration.ArgsInterceptor(args)
+arguments = sources.configuration.ArgsInterceptor(args)
 
-recognizer = internals.recognizers.GetRecognizer(commands.Recognizer)
-fetcher = internals.fetchers.GetFetcher(commands.Fetcher)
-
-config = internals.configuration.AppConfiguration(commands.Config)
-
-if commands.App:
-    application = internals.core.Application(config, fetcher, recognizer)
-    application.Invoke(commands.App)
+config = sources.configuration.AppConfiguration(arguments.Config)
+if arguments.App:
+    recognizer = sources.recognizers.GetRecognizer(arguments.Recognizer)
+    fetcher = sources.fetchers.GetFetcher(arguments.Fetcher)
+    application = sources.core.Application(config, fetcher, recognizer)
+    application.Invoke(arguments.App)
 
