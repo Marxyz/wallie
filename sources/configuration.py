@@ -9,22 +9,30 @@ supportedImageFetchers = ["rWallpapers", "FromDirectory"]
 class AppConfiguration:
 
     defaultJsonSchema = {
-        "WallpapersSaveDirectoryPath": r"../SavedWallpapers/",
-        "Interval": "",
+        "WallpapersSaveDirPath": r"../SavedWallpapers/",
+        "Interval": 90,
         "Repeat": False,
-        "Fetcher": {"Name":"rWallpapers", "BatchSize" : 2},
-        "Recognizer": {"Name":"IntelImagesRecognizer", "AllowedTags" : [], "SetThreshold" : 0.7},
+        "Fetcher": {"Name": "rWallpapers", "BatchSize": 2},
+        "Recognizer": {
+            "Name": "IntelImagesRecognizer",
+            "AllowedTags": [],
+            "SetThreshold": 0.7,
+        },
     }
 
     def __init__(self, commands):
-        self.ConfigFile = "config.config"
+        self.ConfigFileLocation = "config.config"
+        self._CurrentConfigFile = _LoadConfigFile()
 
     def _LoadConfigFile(self):
         j = json.load(self.ConfigFile)
         return j
 
-    def _WriteConfigFile(self):
+    def WriteChanges(self):
         json.dump(self.json, open(self.ConfigFile))
+
+    def __getattribute__(self, name):
+        return self._CurrentConfigFile[name]
 
 
 class ArgsIntercepter:
@@ -32,8 +40,6 @@ class ArgsIntercepter:
         argDict = vars(args)
         self.Config = self._ParseConfig(argDict)
         self.App = self._ParseApp(argDict)
-        self.Recognizer = self._ParseRecognizer(argsDict)
-        self.Fetcher = self._ParseFetcher(argsDict)
 
     def _ParseApp(self, argDict):
         return {k: v for k, v in argDict.items() if k in appCommands}

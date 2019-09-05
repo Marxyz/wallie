@@ -21,11 +21,7 @@ parser.add_argument(
     nargs="+",
 )
 parser.add_argument(
-    "-i",
-    "--interval",
-    required=False,
-    help="Sets the repeat change delay.",
-    type=int,
+    "-i", "--interval", required=False, help="Sets the repeat change delay.", type=int
 )
 parser.add_argument(
     "-r",
@@ -58,18 +54,18 @@ parser.add_argument(
     "--set",
     required=False,
     type=str,
-    help='Sets the wallpaper from provided path.',
+    help="Sets the wallpaper from provided path.",
 )
 
 args = parser.parse_args()
-
-
 arguments = sources.configuration.ArgsInterceptor(args)
-
 config = sources.configuration.AppConfiguration(arguments.Config)
+
 if arguments.App:
-    recognizer = sources.recognizers.GetRecognizer(arguments.Recognizer)
-    fetcher = sources.fetchers.GetFetcher(arguments.Fetcher)
+    recognizer = sources.recognizers.GetRecognizer(config.Recognizer.Name)
+    fetcher = sources.fetchers.GetFetcher(config.Fetcher.Name)
     application = sources.core.Application(config, fetcher, recognizer)
     application.Invoke(arguments.App)
+
+config.WriteChanges()
 
