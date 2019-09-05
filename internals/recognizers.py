@@ -3,6 +3,7 @@ with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
     import numpy
     import os
+    import sys
     stderr = sys.stderr
     sys.stderr = open("/dev/null", "w")
     import keras

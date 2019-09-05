@@ -1,9 +1,8 @@
 import internals.system
-import os.path
 
 
 class Application:
-    def __init__():
+    def __init__(config, fetcher, recognizer):
         self.Commands = []
 
     def Invoke(self, commands):

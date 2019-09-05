@@ -1,6 +1,9 @@
 import subprocess
-def SaveImage(image):
-    path = os.
+import shutil
+def SaveImage(path, image):
+    with open(path, "wb") as file:
+        image.raw.decode_content = True
+        shutil.copyfileobj(image.raw, file)
     return path
 
 def SetWallpaper(path):

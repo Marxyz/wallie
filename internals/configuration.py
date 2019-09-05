@@ -1,12 +1,14 @@
 import json
 
-configCommands = ["tags", "interval", "repeat", "directory"]
-appCommands = ["now", "set"]
-
+configCommands = ["tags", "interval", "repeat"]
+appCommands = ["now", "set",]
+supportedImageRecognizers = ["IntelImagesRecognizer"]
+supportedImageFetchers = ["rWallpapers","FromDirectory"]
 
 class AppConfiguration:
 
-    defaultJsonFile = {""}
+    defaultJsonSchema = {"WallpapersSaveDirectoryPath": "", 
+    "Interval" : "", "Tags":"", "Repeat": str(False)}
     def __init__(self, commands):
         self.ConfigFile = "config.config"
 
@@ -25,6 +27,7 @@ class ArgsIntercepter:
         argDict = vars(args)
         self.Config = self._ParseConfig(argDict)
         self.App = self._ParseApp(argDict)
+        self.Recognizer = self._ParseRecognizer(argsDict)
 
     def _ParseApp(self, argDict):
         return {k: v for k, v in argDict.items() if k in appCommands}
