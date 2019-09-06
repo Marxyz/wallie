@@ -15,7 +15,7 @@ parser.add_argument(
 )
 parser.add_argument(
     "-t",
-    "--tags",
+    "--allowedTags",
     required=False,
     help="Changes the tags which define allow wallpapers. If set without --now flag, the change occurs after previously defined or default interval.",
     nargs="+",
@@ -32,7 +32,7 @@ parser.add_argument(
     help="Used in conjuction with --interval argument, tells program to repeat execution with same configuration. Default value is set to True.",
 )
 parser.add_argument(
-    "-f",
+    "-fet",
     "--fetcher",
     required=False,
     type=str,
@@ -41,7 +41,7 @@ parser.add_argument(
 )
 
 parser.add_argument(
-    "-r",
+    "-rec",
     "--recognizer",
     required=False,
     type=str,
@@ -62,9 +62,9 @@ arguments = sources.configuration.ArgsInterceptor(args)
 config = sources.configuration.AppConfiguration(arguments.Config)
 
 if arguments.App:
-    recognizer = sources.recognizers.GetRecognizer(config.Recognizer.Name)
-    fetcher = sources.fetchers.GetFetcher(config.Fetcher.Name)
-    application = sources.core.Application(config, fetcher, recognizer)
+    recognizer = sources.recognizers.GetRecognizer(config.Instance.Recognizer.Name)
+    fetcher = sources.fetchers.GetFetcher(config.Instance.Fetcher.Name)
+    application = sources.core.Application(config.Instance, fetcher, recognizer)
     application.Invoke(arguments.App)
 
 config.WriteChanges()

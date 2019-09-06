@@ -15,17 +15,18 @@ class Application:
                 self.Commands[name](argument)
 
     def Now(self, arg):
-        imageBatch = self.Fetcher.Get(config.Fetcher.FetchBatchSize)
-        for img in imageBatch:
+        imageGen = self.Fetcher.GetGenerator()
+        for img in imageGen:
             labels = self.Recognizer.Recognize(img.Data)
             if (
-                labels.First().Name in Config.Recognizer.AllowedTags
-                and labels.First().Value > Config.Recognizer.SetThreshold
+                labels.First().Name in self.Config.Recognizer.AllowedTags
+                and labels.First().Value > self.Config.Recognizer.SetThreshold
             ):
                 path = sources.system.SaveImage(
-                    os.path.join(config.WallpaperSaveDirPath, img.Name), img.Data
+                    os.path.join(self.Config.WallpaperSaveDirPath, img.Name), img.Data
                 )
                 sources.system.SetWallpaper(path)
+                break
 
     def Set(self, arg):
         sources.system.SetWallpaper(arg)

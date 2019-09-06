@@ -1,6 +1,8 @@
 import json
+from argparse import Namespace
 
-configCommands = ["tags", "interval", "repeat"]
+configCommands = ["allowedTags", "interval", "repeat"]
+modulChangeCommands = ["recognizer", "fetcher"]
 appCommands = ["now", "set"]
 supportedImageRecognizers = ["IntelImagesRecognizer"]
 supportedImageFetchers = ["rWallpapers", "FromDirectory"]
@@ -12,37 +14,61 @@ class AppConfiguration:
         "WallpapersSaveDirPath": r"../SavedWallpapers/",
         "Interval": 90,
         "Repeat": False,
-        "Fetcher": {"Name": "rWallpapers", "BatchSize": 2},
+        "Fetcher": {"Type": "rWallpapers"},
         "Recognizer": {
-            "Name": "IntelImagesRecognizer",
+            "Type": "IntelImagesRecognizer",
             "AllowedTags": [],
             "SetThreshold": 0.7,
-        },  
+        },
     }
 
     def __init__(self, commands):
-        self.ConfigFileLocation = "config.config"
-        self._CurrentConfigFile = _LoadConfigFile()
+        self._ConfigPath = "config.config"
+        self.Instance = self._LoadConfigFile(self._ConfigPath)
+        self.Invoke(commands)
 
-    def _LoadConfigFile(self):
-        f = open(self.ConfigFileLocation, "w+")
-        if(len(f.read())):
+    def _LoadConfigFile(self, configFileLocation):
+        f = open(configFileLocation, "w+")
+        if len(f.read()):
             return json.load(f)
         else:
-            return json.dumps(self.defaultJsonSchema)
+            return json.loads(
+                json.dumps(self.defaultJsonSchema, default=lambda o: vars(o)),
+                object_hook=lambda d: Namespace(**d),
+            )
 
     def WriteChanges(self):
-        json.dump(self.json, open(self._CurrentConfigFile, "w+"))
+        json.dump(
+            vars(self.Instance), open(self._ConfigPath, "w+"), default=lambda o: vars(o)
+        )
 
-    def __getattribute__(self, name):
-        return self._CurrentConfigFile[name]
+    def SetKey(self, key, value):
+        d = vars(self.Instance)
+        self._SetKeyRecurs(d, key, value)
 
-    
+    def _SetKeyRecurs(self, dic, key, value):
+        for k, v in dic.items():
+            if type(v) == dict:
+                self._SetKeyRecurs(v, key, value)
+            if k == key.capitalize():
+                dic[key.capitalize()] = value
+                return
+
+    def Invoke(self, commands):
+        for name, value in commands.items():
+            if name in configCommands:
+                self.SetKey(name, value)
+            if name in modulChangeCommands:
+                self.SetModule(name, value)
+
+    def SetModule(self, moduleName, value):
+        self.SetKey[moduleName]["Type"] = value
 
 
 class ArgsIntercepter:
     def __init__(self, args):
         argDict = vars(args)
+
         self.Config = self._ParseConfig(argDict)
         self.App = self._ParseApp(argDict)
 

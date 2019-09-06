@@ -1,4 +1,26 @@
-Imports()
+import warnings
+
+with warnings.catch_warnings():
+    warnings.filterwarnings("ignore", category=FutureWarning)
+
+    import numpy
+    import os
+    import sys
+
+    stderr = sys.stderr
+    sys.stderr = open("/dev/null", "w")
+    import keras
+
+    sys.stderr = stderr
+
+    import tensorflow as tf
+    import logging
+
+    logger = tf.get_logger()
+    logger.setLevel(logging.ERROR)
+
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
+logging.getLogger("tensorflow").setLevel(logging.FATAL)
 
 
 class IntelImagesRecognizer:
@@ -46,25 +68,3 @@ def GetRecognizer(args):
     if args == "IntelImagesRecognizer":
         return IntelImagesRecognizer.FromPath("\kernels\IntelImages.h5")
 
-
-def Imports():
-    import warnings
-
-    with warnings.catch_warnings():
-        warnings.filterwarnings("ignore", category=FutureWarning)
-
-        import numpy
-        import os
-        import sys
-
-        stderr = sys.stderr
-        sys.stderr = open("/dev/null", "w")
-        import keras
-        sys.stderr = stderr
-        
-        import tensorflow as tf
-        import logging
-        logger = tf.get_logger()
-        logger.setLevel(logging.ERROR)
-    os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-    logging.getLogger("tensorflow").setLevel(logging.FATAL)
