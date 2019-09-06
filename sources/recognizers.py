@@ -64,7 +64,9 @@ class IntelImagesRecognizer:
         return img_tensor
 
 
-def GetRecognizer(args):
-    if args == "IntelImagesRecognizer":
+def GetRecognizer(recognizerConf):
+    if recognizerConf.Name == "IntelImagesRecognizer":
         return IntelImagesRecognizer.FromPath("\kernels\IntelImages.h5")
+    if recognizerConf.Name == "None":
+        return None
 

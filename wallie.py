@@ -11,7 +11,7 @@ parser.add_argument(
     required=False,
     default=False,
     action="store_true",
-    help="Reloads the options and changes wallpaper as soon as it is possible.",
+    help="Reloads the options and changes wallpaper.",
 )
 parser.add_argument(
     "-t",
@@ -21,7 +21,7 @@ parser.add_argument(
     nargs="+",
 )
 parser.add_argument(
-    "-i", "--interval", required=False, help="Sets the repeat change delay.", type=int
+    "-i", "--interval", required=False, help="Sets the repeat change delay.", type=int,
 )
 parser.add_argument(
     "-r",
@@ -46,7 +46,7 @@ parser.add_argument(
     required=False,
     type=str,
     default="IntelImagesRecognizer",
-    help='Changes the image recognizer to provided. If supported. The default one is named "IntelImagesRecognizer".',
+    help='Changes the image recognizer to provided. If supported. The default one is named "IntelImagesRecognizer". Can be omitted by setting None.',
 )
 
 parser.add_argument(
@@ -62,8 +62,8 @@ arguments = sources.configuration.ArgsInterceptor(args)
 config = sources.configuration.AppConfiguration(arguments.Config)
 
 if arguments.App:
-    recognizer = sources.recognizers.GetRecognizer(config.Instance.Recognizer.Name)
-    fetcher = sources.fetchers.GetFetcher(config.Instance.Fetcher.Name)
+    recognizer = sources.recognizers.GetRecognizer(config.Instance.Recognizer)
+    fetcher = sources.fetchers.GetFetcher(config.Instance.Fetcher)
     application = sources.core.Application(config.Instance, fetcher, recognizer)
     application.Invoke(arguments.App)
 
