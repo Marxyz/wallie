@@ -17,16 +17,17 @@ class Application:
     def Now(self, arg):
         imageGen = self.Fetcher.Fetch()
         for img in imageGen:
-            if self.Recognizer:
-                labels = self.Recognizer.Recognize(img.Data)
-                if not (
-                    labels.First().Name in self.Recognizer.AllowedTags
-                    and labels.First().Value > self.Recognizer.SetThreshold
+            if self.Recognizer and self.Config.Recognizer.AllowedTags:
+                label = self.Recognizer.Recognize(img.ProcessedData)
+
+                if (
+                    label[0] not in self.Config.Recognizer.AllowedTags
+                    or label[1] < self.Config.Recognizer.SetThreshold
                 ):
                     continue
 
             path = sources.system.SaveImage(
-                os.path.join(self.Config.WallpaperSaveDirPath, img.Name), img.Data
+                os.path.join(self.Config.WallpaperSaveDirPath, img.Name), img.RawData
             )
             sources.system.SetWallpaper(path)
             break

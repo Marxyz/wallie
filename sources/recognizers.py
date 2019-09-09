@@ -49,7 +49,8 @@ class IntelImagesRecognizer:
         res = {}
         for ind, p in enumerate(predictions):
             res[inv_classes[ind]] = numpy.around(p, 3)
-        return res
+        m = max(res, key=lambda key: res[key])
+        return (m, res[m])
 
     def _LoadImage(self, image):
 
@@ -63,8 +64,8 @@ class IntelImagesRecognizer:
         return img_tensor
 
 
-def GetRecognizer(recognizerConf):
-    if recognizerConf.PickedRecognizer:
-        if recognizerConf.PickedRecognizer == "IntelNature":
-            return IntelImagesRecognizer.FromPath(recognizerConf.Recognizer.Path)
+def GetRecognizer(config):
+    if config.PickedRecognizer:
+        if config.PickedRecognizer == "IntelNature":
+            return IntelImagesRecognizer.FromPath(config.Recognizer.Path)
 

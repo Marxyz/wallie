@@ -27,6 +27,7 @@ parser.add_argument(
 parser.add_argument(
     "-t",
     "--allowedTags",
+    default="Mountain Sea",
     required=False,
     help="Changes the tags which define allow wallpapers. If set without --now flag, the change occurs after previously defined or default interval.",
     nargs="+",

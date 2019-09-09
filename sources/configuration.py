@@ -23,7 +23,7 @@ class AppConfiguration:
         "RecognizerConfigs": {
             "IntelNature": {
                 "Path": "/home/arkadiusz/Desktop/Projects/PythonBackground/project-ng2/kernels/IntelNature.h5",
-                "AllowedTags": None,
+                "AllowedTags": ["Mountains"],
                 "SetThreshold": 0.7,
             },
         },

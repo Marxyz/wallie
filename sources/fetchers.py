@@ -29,13 +29,14 @@ class FromDirectory:
     def Projection(self, imagePath):
         name = os.path.split(imagePath)[1]
         image = PIL.Image.open(imagePath)
-        image = image.resize((150, 150))
-        data = numpy.asarray(image)
-        return FetchedImage(name, data)
+        res_image = image.resize((150, 150))
+        rawdata = numpy.asarray(image)
+        data = numpy.asarray(res_image)
+        return FetchedImage(name, data, rawdata)
 
     @classmethod
     def FromPath(cls, path):
-        elements = [os.path.join(path,i) for i in os.listdir(path)]
+        elements = [os.path.join(path, i) for i in os.listdir(path)]
         return FromDirectory(elements)
 
 
@@ -52,14 +53,15 @@ class ImageGen:
 
 
 class FetchedImage:
-    def __init__(self, name, imgData):
+    def __init__(self, name, processedData, rawData):
         self.Name = name
-        self.Data = imgData
+        self.ProcessedData = processedData
+        self.RawData = rawData
 
 
-def GetFetcher(fetcherConf):
-    if fetcherConf.PickedFetcher == "rWallpapers":
+def GetFetcher(config):
+    if config.PickedFetcher == "rWallpapers":
         return rWallpapers()
-    if fetcherConf.PickedFetcher == "FromDirectory":
-        return FromDirectory.FromPath(fetcherConf.Fetcher.Path)
+    if config.PickedFetcher == "FromDirectory":
+        return FromDirectory.FromPath(config.Fetcher.Path)
 
