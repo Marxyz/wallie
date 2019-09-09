@@ -1,10 +1,14 @@
 import subprocess
 import shutil
+import os
+import PIL.Image
 
 def SaveImage(path, image):
-    with open(path, "wb") as file:
-        image.raw.decode_content = True
-        shutil.copyfileobj(image.raw, file)
+    d = os.path.split(path)[0]
+    if(not os.path.isdir(d)):
+        os.mkdir(d)
+    im = PIL.Image.fromarray(image)
+    im.save(path)
     return path
 
 def SetWallpaper(path):

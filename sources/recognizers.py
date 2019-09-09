@@ -6,7 +6,7 @@ with warnings.catch_warnings():
     import numpy
     import os
     import sys
-
+    import PIL.Image
     stderr = sys.stderr
     sys.stderr = open("/dev/null", "w")
     import keras
@@ -39,7 +39,7 @@ class IntelImagesRecognizer:
         model = keras.models.load_model(path)
         return IntelImagesRecognizer(model)
 
-    def __init__(model):
+    def __init__(self,model):
         self.LoadedModel = model
 
     def Recognize(self, image):
@@ -57,16 +57,14 @@ class IntelImagesRecognizer:
             img = keras.preprocessing.image.load_img(image, target_size=(150, 150))
         else:
             img = image
-
         img_tensor = keras.preprocessing.image.img_to_array(img)
-        img_tensor = np.expand_dims(img_tensor, axis=0)
+        img_tensor = numpy.expand_dims(img_tensor, axis=0)
         img_tensor /= 255.0
         return img_tensor
 
 
 def GetRecognizer(recognizerConf):
-    if recognizerConf.Name == "IntelImagesRecognizer":
-        return IntelImagesRecognizer.FromPath("\kernels\IntelImages.h5")
-    if recognizerConf.Name == "None":
-        return None
+    if recognizerConf.PickedRecognizer:
+        if recognizerConf.PickedRecognizer == "IntelNature":
+            return IntelImagesRecognizer.FromPath(recognizerConf.Recognizer.Path)
 

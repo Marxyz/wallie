@@ -1,6 +1,8 @@
 get-image-tags.py
 set-wallpaper.py
 /.mypy_cache
-/internals/__pycache__
+/sources/__pycache__
 /Env
 /.vscode
+/SavedWallpapers
+config.json

@@ -1,7 +1,10 @@
 import argparse
+import json
 import sources.configuration
 import sources.recognizers
 import sources.core
+import sources.fetchers
+import pprint
 
 
 parser = argparse.ArgumentParser("Wallie - changes your wallpaper how you want it.")
@@ -9,9 +12,17 @@ parser.add_argument(
     "-n",
     "--now",
     required=False,
-    default=False,
+    default=True,
     action="store_true",
     help="Reloads the options and changes wallpaper.",
+)
+
+parser.add_argument(
+    "-s",
+    "--set",
+    required=False,
+    type=str,
+    help="Sets the wallpaper from provided path.",
 )
 parser.add_argument(
     "-t",
@@ -21,7 +32,7 @@ parser.add_argument(
     nargs="+",
 )
 parser.add_argument(
-    "-i", "--interval", required=False, help="Sets the repeat change delay.", type=int,
+    "-i", "--interval", required=False, help="Sets the repeat change delay.", type=int
 )
 parser.add_argument(
     "-r",
@@ -36,7 +47,7 @@ parser.add_argument(
     "--fetcher",
     required=False,
     type=str,
-    default="rWallpapers",
+    default="FromDirectory",
     help='Changes the fetcher to provided. If supported. The default one is named "rWallpapers"',
 )
 
@@ -45,25 +56,23 @@ parser.add_argument(
     "--recognizer",
     required=False,
     type=str,
-    default="IntelImagesRecognizer",
+    default="IntelNature",
     help='Changes the image recognizer to provided. If supported. The default one is named "IntelImagesRecognizer". Can be omitted by setting None.',
 )
-
 parser.add_argument(
-    "-s",
-    "--set",
+    "-so",
+    "--setOption",
     required=False,
-    type=str,
-    help="Sets the wallpaper from provided path.",
+    type=json.load,
+    help="Allows user to set specified option in configuration.",
 )
 
 args = parser.parse_args()
-arguments = sources.configuration.ArgsInterceptor(args)
+arguments = sources.configuration.ArgsIntercepter(args)
 config = sources.configuration.AppConfiguration(arguments.Config)
-
 if arguments.App:
-    recognizer = sources.recognizers.GetRecognizer(config.Instance.Recognizer)
-    fetcher = sources.fetchers.GetFetcher(config.Instance.Fetcher)
+    recognizer = sources.recognizers.GetRecognizer(config.Instance)
+    fetcher = sources.fetchers.GetFetcher(config.Instance)
     application = sources.core.Application(config.Instance, fetcher, recognizer)
     application.Invoke(arguments.App)
 

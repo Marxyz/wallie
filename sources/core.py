@@ -15,13 +15,13 @@ class Application:
                 self.Commands[name](argument)
 
     def Now(self, arg):
-        imageGen = self.Fetcher.GetGenerator()
+        imageGen = self.Fetcher.Fetch()
         for img in imageGen:
             if self.Recognizer:
                 labels = self.Recognizer.Recognize(img.Data)
                 if not (
-                    labels.First().Name in self.Config.Recognizer.AllowedTags
-                    and labels.First().Value > self.Config.Recognizer.SetThreshold
+                    labels.First().Name in self.Recognizer.AllowedTags
+                    and labels.First().Value > self.Recognizer.SetThreshold
                 ):
                     continue
 

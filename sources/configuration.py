@@ -4,54 +4,79 @@ from argparse import Namespace
 configCommands = ["allowedTags", "interval", "repeat"]
 modulChangeCommands = ["recognizer", "fetcher"]
 appCommands = ["now", "set"]
-supportedImageRecognizers = ["IntelImagesRecognizer"]
+supportedImageRecognizers = ["IntelNature"]
 supportedImageFetchers = ["rWallpapers", "FromDirectory"]
 
 
 class AppConfiguration:
 
-    defaultJsonSchema = {
-        "WallpapersSaveDirPath": r"../SavedWallpapers/",
-        "Interval": 90,
+    defaultJson = {
+        "WallpaperSaveDirPath": r"/home/arkadiusz/Desktop/Projects/PythonBackground/project-ng2/SavedWallpapers/",
+        "Interval": None,
         "Repeat": False,
-        "Fetcher": {"Type": "rWallpapers"},
-        "Recognizer": {
-            "Type": "IntelImagesRecognizer",
-            "AllowedTags": [],
-            "SetThreshold": 0.7,
+        "FetcherConfigs": {
+            "FromDirectory": {
+                "Path": r"/home/arkadiusz/Desktop/Projects/PythonBackground/project_ng/"
+            },
+            "rWallpapers": {},
         },
+        "RecognizerConfigs": {
+            "IntelNature": {
+                "Path": "/home/arkadiusz/Desktop/Projects/PythonBackground/project-ng2/kernels/IntelNature.h5",
+                "AllowedTags": None,
+                "SetThreshold": 0.7,
+            },
+        },
+        "PickedRecognizer": "IntelNature",
+        "PickedFetcher": "FromDirectory",
     }
 
     def __init__(self, commands):
-        self._ConfigPath = "config.config"
-        self.Instance = self._LoadConfigFile(self._ConfigPath)
+        self._ConfigPath = "config.json"
+        self.Instance = self._LoadConfig(self._ConfigPath)
         self.Invoke(commands)
 
-    def _LoadConfigFile(self, configFileLocation):
+    def _LoadConfig(self, configFileLocation):
         f = open(configFileLocation, "w+")
+        d = None
         if len(f.read()):
-            return json.load(f)
+            d = json.load(f)
         else:
-            return json.loads(
-                json.dumps(self.defaultJsonSchema, default=lambda o: vars(o)),
-                object_hook=lambda d: Namespace(**d),
-            )
+            d = self.LoadsDefault()
+
+        di = vars(d)
+        di["Fetcher"] = vars(di["FetcherConfigs"]).get(di.get("PickedFetcher"))
+        di["Recognizer"] = vars(di["RecognizerConfigs"]).get(di.get("PickedRecognizer"))
+        return Namespace(**di)
+
+    def LoadsDefault(self):
+        return json.loads(
+            json.dumps(self.defaultJson, default=lambda o: vars(o)),
+            object_hook=lambda d: Namespace(**d),
+        )
 
     def WriteChanges(self):
+        di = vars(self.Instance)
+        di.pop("Fetcher")
+        di.pop("Recognizer")
         json.dump(
-            vars(self.Instance), open(self._ConfigPath, "w+"), default=lambda o: vars(o)
+            vars(self.Instance),
+            open(self._ConfigPath, "w+"),
+            default=lambda o: vars(o),
+            indent=2,
         )
 
     def SetKey(self, key, value):
         d = vars(self.Instance)
-        self._SetKeyRecurs(d, key, value)
+        self._SetKeyRecur(d, key, value)
 
-    def _SetKeyRecurs(self, dic, key, value):
+    def _SetKeyRecur(self, dic, key, value):
         for k, v in dic.items():
-            if type(v) == dict:
-                self._SetKeyRecurs(v, key, value)
-            if k == key.capitalize():
-                dic[key.capitalize()] = value
+            key = key[0].upper() + key[1:]
+            if type(v) == Namespace:
+                self._SetKeyRecur(vars(v), key, value)
+            if k == key:
+                dic[k] = value
                 return
 
     def Invoke(self, commands):
@@ -62,7 +87,7 @@ class AppConfiguration:
                 self.SetModule(name, value)
 
     def SetModule(self, moduleName, value):
-        self.SetKey[moduleName]["Type"] = value
+        self._SetKeyRecur(vars(self.Instance), f"Picked{moduleName.capitalize()}", value)
 
 
 class ArgsIntercepter:
@@ -76,5 +101,5 @@ class ArgsIntercepter:
         return {k: v for k, v in argDict.items() if k in appCommands}
 
     def _ParseConfig(self, argDict):
-        return {k: v for k, v in argDict.items() if k in configCommands}
+        return {k: v for k, v in argDict.items() if k in configCommands or k in modulChangeCommands} 
 
