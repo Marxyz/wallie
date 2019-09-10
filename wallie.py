@@ -38,7 +38,7 @@ parser.add_argument(
 parser.add_argument(
     "-r",
     "--repeat",
-    default=True,
+    default=False,
     action="store_true",
     required=False,
     help="Used in conjuction with --interval argument, tells program to repeat execution with same configuration. Default value is set to True.",
@@ -71,11 +71,10 @@ parser.add_argument(
 args = parser.parse_args()
 arguments = sources.configuration.ArgsIntercepter(args)
 config = sources.configuration.AppConfiguration(arguments.Config)
+config.WriteChanges()
 if arguments.App:
     recognizer = sources.recognizers.GetRecognizer(config.Instance)
     fetcher = sources.fetchers.GetFetcher(config.Instance)
     application = sources.core.Application(config.Instance, fetcher, recognizer)
     application.Invoke(arguments.App)
-
-config.WriteChanges()
 

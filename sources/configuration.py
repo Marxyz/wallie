@@ -1,4 +1,5 @@
 import json
+import os
 from argparse import Namespace
 
 configCommands = ["allowedTags", "interval", "repeat"]
@@ -23,9 +24,9 @@ class AppConfiguration:
         "RecognizerConfigs": {
             "IntelNature": {
                 "Path": "/home/arkadiusz/Desktop/Projects/PythonBackground/project-ng2/kernels/IntelNature.h5",
-                "AllowedTags": ["Mountains"],
+                "AllowedTags": ["Mountain"],
                 "SetThreshold": 0.7,
-            },
+            }
         },
         "PickedRecognizer": "IntelNature",
         "PickedFetcher": "FromDirectory",
@@ -37,10 +38,17 @@ class AppConfiguration:
         self.Invoke(commands)
 
     def _LoadConfig(self, configFileLocation):
-        f = open(configFileLocation, "w+")
         d = None
-        if len(f.read()):
-            d = json.load(f)
+        if os.path.exists(configFileLocation):
+            f = open(configFileLocation, "r")
+            rd = f.read()
+            if rd:
+                try:
+                    d = json.loads(rd, object_hook=lambda d: Namespace(**d))
+                except expression as identifier:
+                    d = self.LoadsDefault()
+            else:
+                d = self.LoadsDefault()
         else:
             d = self.LoadsDefault()
 
@@ -87,7 +95,9 @@ class AppConfiguration:
                 self.SetModule(name, value)
 
     def SetModule(self, moduleName, value):
-        self._SetKeyRecur(vars(self.Instance), f"Picked{moduleName.capitalize()}", value)
+        self._SetKeyRecur(
+            vars(self.Instance), f"Picked{moduleName.capitalize()}", value
+        )
 
 
 class ArgsIntercepter:
@@ -101,5 +111,9 @@ class ArgsIntercepter:
         return {k: v for k, v in argDict.items() if k in appCommands}
 
     def _ParseConfig(self, argDict):
-        return {k: v for k, v in argDict.items() if k in configCommands or k in modulChangeCommands} 
+        return {
+            k: v
+            for k, v in argDict.items()
+            if k in configCommands or k in modulChangeCommands
+        }
 
