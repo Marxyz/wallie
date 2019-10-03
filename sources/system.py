@@ -3,11 +3,11 @@ import shutil
 import os
 import PIL.Image
 
-def SaveImage(path, image):
-    d = os.path.split(path)[0]
-    if(not os.path.isdir(d)):
-        os.mkdir(d)
-    im = PIL.Image.fromarray(image)
+def SaveImage(directory, name, data):
+    if(not os.path.isdir(directory)):
+        os.mkdir(directory)
+    im = PIL.Image.fromarray(data)
+    path = os.path.join(directory, name)
     im.save(path)
     return path
 

@@ -10,7 +10,6 @@ supportedImageFetchers = ["rWallpapers", "FromDirectory"]
 
 
 class AppConfiguration:
-
     defaultJson = {
         "WallpaperSaveDirPath": r"/home/arkadiusz/Desktop/Projects/PythonBackground/project-ng2/SavedWallpapers/",
         "Interval": None,
@@ -45,7 +44,7 @@ class AppConfiguration:
             if rd:
                 try:
                     d = json.loads(rd, object_hook=lambda d: Namespace(**d))
-                except expression as identifier:
+                except:
                     d = self.LoadsDefault()
             else:
                 d = self.LoadsDefault()
@@ -93,6 +92,9 @@ class AppConfiguration:
                 self.SetKey(name, value)
             if name in modulChangeCommands:
                 self.SetModule(name, value)
+        di = vars(self.Instance)
+        di["Fetcher"] = vars(di["FetcherConfigs"]).get(di.get("PickedFetcher"))
+        di["Recognizer"] = vars(di["RecognizerConfigs"]).get(di.get("PickedRecognizer"))
 
     def SetModule(self, moduleName, value):
         self._SetKeyRecur(
@@ -108,12 +110,12 @@ class ArgsIntercepter:
         self.App = self._ParseApp(argDict)
 
     def _ParseApp(self, argDict):
-        return {k: v for k, v in argDict.items() if k in appCommands}
+        return {k: v for k, v in argDict.items() if k in appCommands and v}
 
     def _ParseConfig(self, argDict):
         return {
             k: v
             for k, v in argDict.items()
-            if k in configCommands or k in modulChangeCommands
+            if (k in configCommands or k in modulChangeCommands) and v
         }
 

@@ -12,7 +12,6 @@ parser.add_argument(
     "-n",
     "--now",
     required=False,
-    default=True,
     action="store_true",
     help="Reloads the options and changes wallpaper.",
 )
@@ -27,7 +26,6 @@ parser.add_argument(
 parser.add_argument(
     "-t",
     "--allowedTags",
-    default="Mountain Sea",
     required=False,
     help="Changes the tags which define allow wallpapers. If set without --now flag, the change occurs after previously defined or default interval.",
     nargs="+",
@@ -58,8 +56,9 @@ parser.add_argument(
     required=False,
     type=str,
     default="IntelNature",
-    help='Changes the image recognizer to provided. If supported. The default one is named "IntelImagesRecognizer". Can be omitted by setting None.',
+    help='Changes the image recognizer to provided. If supported. The default one is named "IntelImages". Can be omitted by setting None.',
 )
+
 parser.add_argument(
     "-so",
     "--setOption",
@@ -71,10 +70,11 @@ parser.add_argument(
 args = parser.parse_args()
 arguments = sources.configuration.ArgsIntercepter(args)
 config = sources.configuration.AppConfiguration(arguments.Config)
-config.WriteChanges()
 if arguments.App:
     recognizer = sources.recognizers.GetRecognizer(config.Instance)
     fetcher = sources.fetchers.GetFetcher(config.Instance)
     application = sources.core.Application(config.Instance, fetcher, recognizer)
     application.Invoke(arguments.App)
+
+config.WriteChanges()
 

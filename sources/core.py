@@ -1,5 +1,4 @@
 import sources.system
-import os.path
 
 
 class Application:
@@ -15,19 +14,18 @@ class Application:
                 self.Commands[name](argument)
 
     def Now(self, arg):
-        imageGen = self.Fetcher.Fetch()
-        for img in imageGen:
-            if self.Recognizer and self.Config.Recognizer.AllowedTags:
+        for img in self.Fetcher.Fetch():
+            if self.Config.Recognizer and self.Config.Recognizer.AllowedTags:
                 label = self.Recognizer.Recognize(img.ProcessedData)
-
+                print(f"{label.Description} -> {label.Confidence}")
                 if (
-                    label[0] not in self.Config.Recognizer.AllowedTags
-                    or label[1] < self.Config.Recognizer.SetThreshold
+                    label.Description not in self.Config.Recognizer.AllowedTags
+                    or label.Confidence < self.Config.Recognizer.SetThreshold
                 ):
                     continue
 
             path = sources.system.SaveImage(
-                os.path.join(self.Config.WallpaperSaveDirPath, img.Name), img.RawData
+                self.Config.WallpaperSaveDirPath, img.Name, img.RawData
             )
             sources.system.SetWallpaper(path)
             break

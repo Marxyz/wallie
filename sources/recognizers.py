@@ -1,4 +1,5 @@
 import warnings
+import collections
 
 with warnings.catch_warnings():
     warnings.filterwarnings("ignore", category=FutureWarning)
@@ -7,6 +8,7 @@ with warnings.catch_warnings():
     import os
     import sys
     import PIL.Image
+
     stderr = sys.stderr
     sys.stderr = open("/dev/null", "w")
     import keras
@@ -21,6 +23,9 @@ with warnings.catch_warnings():
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 logging.getLogger("tensorflow").setLevel(logging.FATAL)
+
+
+Label = collections.namedtuple("Label", "Confidence Description")
 
 
 class IntelImagesRecognizer:
@@ -39,7 +44,7 @@ class IntelImagesRecognizer:
         model = keras.models.load_model(path)
         return IntelImagesRecognizer(model)
 
-    def __init__(self,model):
+    def __init__(self, model):
         self.LoadedModel = model
 
     def Recognize(self, image):
@@ -50,7 +55,8 @@ class IntelImagesRecognizer:
         for ind, p in enumerate(predictions):
             res[inv_classes[ind]] = numpy.around(p, 3)
         m = max(res, key=lambda key: res[key])
-        return (m, res[m])
+
+        return Label(Confidence=res[m], Description=m)
 
     def _LoadImage(self, image):
 
@@ -65,7 +71,7 @@ class IntelImagesRecognizer:
 
 
 def GetRecognizer(config):
-    if config.PickedRecognizer:
+    if config.PickedRecognizer != "None":
         if config.PickedRecognizer == "IntelNature":
             return IntelImagesRecognizer.FromPath(config.Recognizer.Path)
 
