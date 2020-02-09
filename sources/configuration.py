@@ -11,18 +11,18 @@ supportedImageFetchers = ["rWallpapers", "FromDirectory"]
 
 class AppConfiguration:
     defaultJson = {
-        "WallpaperSaveDirPath": r"/home/arkadiusz/Desktop/Projects/PythonBackground/project-ng2/SavedWallpapers/",
+        "WallpaperSaveDirPath": r"/home/arkadiusz/Projects/PythonBackground/SavedWallpapers",
         "Interval": None,
         "Repeat": False,
         "FetcherConfigs": {
             "FromDirectory": {
-                "Path": r"/home/arkadiusz/Desktop/Projects/PythonBackground/project_ng/"
+                "Path": r"/home/arkadiusz/Projects/PythonBackground/SavedWallpapers"
             },
             "rWallpapers": {},
         },
         "RecognizerConfigs": {
             "IntelNature": {
-                "Path": "/home/arkadiusz/Desktop/Projects/PythonBackground/project-ng2/kernels/IntelNature.h5",
+                "Path": "/home/arkadiusz/Projects/PythonBackground/Source/kernels/IntelNature.h5",
                 "AllowedTags": ["Mountain"],
                 "SetThreshold": 0.7,
             }

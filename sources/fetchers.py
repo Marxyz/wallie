@@ -15,7 +15,7 @@ ResponseData = collections.namedtuple("ResponseData", "Response After")
 
 
 class rWallpapers:
-    baseUrl = "https://www.reddit.com/r/EarthPorn.json"
+    baseUrl = "https://www.reddit.com/r/EarthPorn/new.json"
 
     def __init__(self):
         pass
@@ -37,7 +37,7 @@ class rWallpapers:
 
     def Limiter(self, redditSubmission):
         return (
-            redditSubmission.Score > 1000
+            redditSubmission.Score > 100
             and redditSubmission.Width >= 1500
             and redditSubmission.Height >= 1000
             and "external" not in redditSubmission.Url

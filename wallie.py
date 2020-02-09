@@ -46,7 +46,7 @@ parser.add_argument(
     "--fetcher",
     required=False,
     type=str,
-    default="FromDirectory",
+    default="rWallpapers",
     help='Changes the fetcher to provided. If supported. The default one is named "rWallpapers"',
 )
 
@@ -55,7 +55,7 @@ parser.add_argument(
     "--recognizer",
     required=False,
     type=str,
-    default="IntelNature",
+    default="None",
     help='Changes the image recognizer to provided. If supported. The default one is named "IntelImages". Can be omitted by setting None.',
 )
 
@@ -63,11 +63,11 @@ parser.add_argument(
     "-so",
     "--setOption",
     required=False,
-    type=json.load,
     help="Allows user to set specified option in configuration.",
 )
 
 args = parser.parse_args()
+args.now = True
 arguments = sources.configuration.ArgsIntercepter(args)
 config = sources.configuration.AppConfiguration(arguments.Config)
 if arguments.App:
